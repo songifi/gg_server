@@ -7,12 +7,15 @@ import { AppModule } from './app.module';
 import { RequestLoggerMiddleware } from './logger/request-logger.middleware';
 import { LoggingService } from './logger/logger.service';
 import { CorrelationMiddleware } from './logger/correlation.middleware';
+import { Request, Response, NextFunction } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = app.get(LoggingService);
 
-  app.use(new RequestLoggerMiddleware(logger).use);
+  app.use((req: Request, res: Response, next: NextFunction) =>
+    new RequestLoggerMiddleware(logger).use(req, res, next),
+  );
   app.use(new CorrelationMiddleware().use);
 
   await app.listen(process.env.PORT ?? 3000);
