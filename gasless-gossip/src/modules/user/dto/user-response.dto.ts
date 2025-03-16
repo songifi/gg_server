@@ -7,13 +7,13 @@ import { UserStatus } from '../enums/user-status.enum';
 @Exclude()
 export class UserResponseDto {
   @Expose()
-  id: string;
+  id!: string;
 
   @Expose()
-  username: string;
+  username!: string;
 
   @Expose()
-  displayName: string;
+  displayName!: string;
 
   @Expose()
   bio?: string;
@@ -22,20 +22,20 @@ export class UserResponseDto {
   avatarUrl?: string;
 
   @Expose()
-  status: UserStatus;
+  status!: UserStatus;
 
   @Expose()
-  role: UserRole;
+  role!: UserRole;
 
   @Expose()
-  @Transform(({ obj }) => obj.walletAddresses?.[0] || null)
+  @Transform(({ obj }: { obj: { walletAddresses?: string[] } }) => obj.walletAddresses?.[0] || null)
   primaryWalletAddress?: string;
 
   @Expose()
-  lastSeen: Date;
+  lastSeen!: Date;
 
   @Expose()
-  createdAt: Date;
+  createdAt!: Date;
 
   // The password hash is excluded by default due to @Exclude()
 

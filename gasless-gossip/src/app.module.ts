@@ -10,12 +10,20 @@ import { LoggerModule } from './logger/logger.module';
 import { LoggingService } from './logger/logger.service';
 import { HealthModule } from './health/health.module';
 import { DatabaseModule } from './database/database.module';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { AuthenticationModule } from './authentication/authentication.module';
 
 @Module({
   imports: [
     ConfigModule,
     DatabaseModule,
     HealthModule,
+    PassportModule.register({ defaultStrategy: 'jwt', session: false }),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+    }),
+    AuthenticationModule,
     UsersModule,
     AuthModule,
     ChatModule,
