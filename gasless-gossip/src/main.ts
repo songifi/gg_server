@@ -10,11 +10,22 @@ import { CorrelationMiddleware } from './logger/correlation.middleware';
 import { Request, Response, NextFunction } from 'express';
 import { GlobalExceptionFilter } from './utils/global-exception-filter';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
 // import { ValidationException } from './config/exceptions/config.exceptions';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = app.get(LoggingService);
+
+  app.enableCors();
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
 
   const config = new DocumentBuilder()
     .setTitle('Gasless Gossip')
@@ -24,18 +35,19 @@ async function bootstrap() {
       {
         type: 'http',
         scheme: 'bearer',
-        bearerFormat: 'JWT',
-        name: 'JWT',
-        description: 'Enter JWT token',
-        in: 'header',
+        bearerFormat: 'JWT', // Optional, just to specify that it is a JWT token
       },
-      'JWT',
+      'JWT-auth', // This is the name of the security scheme
     )
     .build();
 
   const document: OpenAPIObject = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  });
 
   app.use((req: Request, res: Response, next: NextFunction) =>
     new RequestLoggerMiddleware(logger).use(req, res, next),

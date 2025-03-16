@@ -6,13 +6,13 @@ import { UserStatus } from '../enums/user-status.enum';
 @Exclude()
 export class UserProfileDto {
   @Expose()
-  id: string;
+  id!: string;
 
   @Expose()
-  username: string;
+  username!: string;
 
   @Expose()
-  displayName: string;
+  displayName!: string;
 
   @Expose()
   bio?: string;
@@ -21,7 +21,7 @@ export class UserProfileDto {
   avatarUrl?: string;
 
   @Expose()
-  status: UserStatus;
+  status!: UserStatus;
 
   @Expose()
   @Transform(({ obj, value }) => {
@@ -34,8 +34,8 @@ export class UserProfileDto {
   primaryWalletAddress?: string;
 
   @Expose()
-  @Transform(({ obj }) => obj.isContact || false)
-  isContact: boolean;
+  @Transform(({ obj }: { obj: { isContact?: boolean } }) => obj.isContact || false)
+  isContact!: boolean;
 
   constructor(partial: Partial<UserProfileDto>) {
     Object.assign(this, partial);

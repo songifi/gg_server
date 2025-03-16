@@ -1,6 +1,15 @@
 // src/modules/user/dto/update-user.dto.ts
 
-import { IsEmail, IsString, MinLength, MaxLength, Matches, IsOptional, IsUrl, IsEnum } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  MinLength,
+  MaxLength,
+  Matches,
+  IsOptional,
+  IsUrl,
+  IsEnum,
+} from 'class-validator';
 import { UserStatus } from '../enums/user-status.enum';
 
 export class UpdateUserDto {
