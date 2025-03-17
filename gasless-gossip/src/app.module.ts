@@ -13,6 +13,8 @@ import { DatabaseModule } from './database/database.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthenticationModule } from './authentication/authentication.module';
+import { ConversationModule } from './conversation/conversation.module';
+
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { AuthenticationModule } from './authentication/authentication.module';
     AuthModule,
     ChatModule,
     LoggerModule,
+    ConversationModule
+
   ],
   controllers: [AppController],
   providers: [AppService, LoggingService],
