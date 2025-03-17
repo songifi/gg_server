@@ -31,6 +31,7 @@ export class ConversationController {
     return this.conversationService.createDirectConversation(createDirectConversationDto);
   }
 
+  // post request for groupConversation
   @Post('group')
   createGroupConversation(
     @Body() createGroupConversationDto: CreateGroupConversationDto
@@ -38,6 +39,8 @@ export class ConversationController {
     return this.conversationService.createGroupConversation(createGroupConversationDto);
   }
 
+
+  // get request for usetConversation
   @Get()
   getUserConversations(@Request() req): Promise<ConversationResponseDto[]> {
     const userId = req.user.id;
@@ -49,6 +52,7 @@ export class ConversationController {
     return this.conversationService.getConversationById(id);
   }
 
+  // patch request for udpategroupConversation
   @Patch('group/:id')
   updateGroupConversation(
     @Param('id') id: string,
@@ -57,6 +61,7 @@ export class ConversationController {
     return this.conversationService.updateGroupConversation(id, updateGroupConversationDto);
   }
 
+  // post request for groupConversation
   @Post('group/:id/users/:userId')
   addUserToGroupConversation(
     @Param('id') id: string,
@@ -65,6 +70,7 @@ export class ConversationController {
     return this.conversationService.addUserToGroupConversation(id, userId);
   }
 
+  // delete request for groupConversation
   @Delete('group/:id/users/:userId')
   removeUserFromGroupConversation(
     @Param('id') id: string,
