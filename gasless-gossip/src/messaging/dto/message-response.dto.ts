@@ -5,28 +5,28 @@ import { MessageType } from "../enums/message-type.enum";
 @Exclude()
 export class MessageResponseDto {
   @Expose()
-  id: string;
+  id!: string;
 
   @Expose()
-  conversationId: string;
+  conversationId!: string;
 
   @Expose()
-  sender: string;
+  sender!: string;
 
   @Expose()
-  content: string;
+  content!: string;
 
   @Expose()
-  type: MessageType;
+  type!: MessageType;
 
   @Expose()
-  status: MessageStatus;
+  status!: MessageStatus;
 
   @Expose()
-  readBy: string[];
+  readBy!: string[];
 
   @Expose()
-  reactions: {
+  reactions!: {
     userId: string;
     emoji: string;
     createdAt: Date;
@@ -64,7 +64,7 @@ export class MessageResponseDto {
   };
 
   @Expose()
-  isEdited: boolean;
+  isEdited!: boolean;
 
   @Expose()
   deliveredAt?: Date;
@@ -73,10 +73,10 @@ export class MessageResponseDto {
   readAt?: Date;
 
   @Expose()
-  createdAt: Date;
+  createdAt!: Date;
 
   @Expose()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   constructor(partial: Partial<MessageResponseDto>) {
     Object.assign(this, partial);

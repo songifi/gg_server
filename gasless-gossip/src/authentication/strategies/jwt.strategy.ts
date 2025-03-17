@@ -18,16 +18,23 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: any) {
-    if (!payload) {
+    if (!payload?.sub || !payload?.email) {
       throw new UnauthorizedException('Invalid token payload');
     }
 
-    // 🔹 You can also add a blacklist check here if needed
-    const isBlacklisted = await this.authService.isTokenBlacklisted(payload.jti);
-    if (isBlacklisted) {
-      throw new UnauthorizedException('Token is blacklisted');
+    // Optional blacklist check if jti is present
+    if (payload.jti) {
+      const isBlacklisted = await this.authService.isTokenBlacklisted(payload.jti);
+      if (isBlacklisted) {
+        throw new UnauthorizedException('Token is blacklisted');
+      }
     }
 
-    return { userId: payload.sub, email: payload.email, roles: payload.roles };
+    //  Return user data with type safety
+    return {
+      userId: payload.sub,
+      email: payload.email,
+      roles: payload.roles || [], // Default to an empty array if roles are not present
+    };
   }
 }

@@ -126,8 +126,8 @@ export interface IUser extends UserDocument {
   isLocked(): boolean;
 }
 // Add indexes for better query performance
-UserSchema.index({ username: 1 });
-UserSchema.index({ email: 1 });
+// UserSchema.index({ username: 1 }); 
+// UserSchema.index({ email: 1 });
 UserSchema.index({ walletAddresses: 1 });
 UserSchema.index({ status: 1 });
 

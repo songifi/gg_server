@@ -16,16 +16,16 @@ import {
   export class CreateMessageDto {
     @IsString()
     @IsNotEmpty()
-    conversationId: string;
+    conversationId!: string;
   
     @IsString()
     @IsNotEmpty()
     @MaxLength(2000)
-    content: string;
+    content!: string;
   
     @IsEnum(MessageType)
     @IsNotEmpty()
-    type: MessageType;
+    type!: MessageType;
   
     @IsOptional()
     @IsString()

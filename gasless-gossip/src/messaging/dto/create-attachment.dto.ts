@@ -12,24 +12,24 @@ import {
   export class CreateAttachmentDto {
     @IsEnum(["image", "video", "audio", "file"])
     @IsNotEmpty()
-    type: "image" | "video" | "audio" | "file";
+    type!: "image" | "video" | "audio" | "file";
   
     @IsUrl()
     @IsNotEmpty()
-    url: string;
+    url!: string;
   
     @IsString()
     @IsNotEmpty()
     @MaxLength(255)
-    filename: string;
+    filename!: string;
   
     @IsString()
     @IsNotEmpty()
-    mimeType: string;
+    mimeType!: string;
   
     @IsNumber()
     @IsNotEmpty()
-    size: number;
+    size!: number;
   
     @IsOptional()
     dimensions?: {
