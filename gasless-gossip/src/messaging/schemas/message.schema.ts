@@ -8,40 +8,40 @@ import { MessageType } from "../enums/message-type.enum";
 @Schema()
 class ReactionSchema {
   @Prop({ required: true })
-  userId: string;
+  userId!: string;
 
   @Prop({ required: true })
-  emoji: string;
+  emoji!: string;
 
   @Prop({ default: Date.now })
-  createdAt: Date;
+  createdAt!: Date;
 }
 
 @Schema()
 class DimensionsSchema {
   @Prop()
-  width: number;
+  width!: number;
 
   @Prop()
-  height: number;
+  height!: number;
 }
 
 @Schema()
 class AttachmentSchema {
   @Prop({ required: true, enum: ["image", "video", "audio", "file"] })
-  type: string;
+  type!: string;
 
   @Prop({ required: true })
-  url: string;
+  url!: string;
 
   @Prop({ required: true })
-  filename: string;
+  filename!: string;
 
   @Prop({ required: true })
-  mimeType: string;
+  mimeType!: string;
 
   @Prop({ required: true })
-  size: number;
+  size!: number;
 
   @Prop()
   dimensions?: DimensionsSchema;
@@ -56,46 +56,46 @@ class AttachmentSchema {
 @Schema()
 class TokenTransferSchema {
   @Prop({ required: true })
-  amount: string;
+  amount!: string;
 
   @Prop({ required: true })
-  tokenAddress: string;
+  tokenAddress!: string;
 
   @Prop({ required: true })
-  tokenSymbol: string;
+  tokenSymbol!: string;
 
   @Prop({ required: true })
-  tokenDecimals: number;
+  tokenDecimals!: number;
 
   @Prop()
   transactionHash?: string;
 
   @Prop({ required: true, enum: ["pending", "confirmed", "failed"] })
-  status: string;
+  status!: string;
 }
 
 @Schema({ timestamps: true })
 export class MessageDocument extends Document {
   @Prop({ required: true, index: true })
-  conversationId: string;
+  conversationId!: string;
 
   @Prop({ required: true, index: true })
-  sender: string;
+  sender!: string;
 
   @Prop({ required: true })
-  content: string;
+  content!: string;
 
   @Prop({ required: true, enum: MessageType, default: MessageType.TEXT })
-  type: MessageType;
+  type!: MessageType;
 
   @Prop({ required: true, enum: MessageStatus, default: MessageStatus.SENT })
-  status: MessageStatus;
+  status!: MessageStatus;
 
   @Prop({ type: [String], default: [] })
-  readBy: string[];
+  readBy!: string[];
 
   @Prop({ type: [ReactionSchema], default: [] })
-  reactions: ReactionSchema[];
+  reactions!: ReactionSchema[];
 
   @Prop()
   replyTo?: string;
@@ -113,11 +113,11 @@ export class MessageDocument extends Document {
   metadata?: Record<string, any>;
 
   @Prop({ default: false })
-  isEdited: boolean;
+  isEdited!: boolean;
 
   @Prop({ default: false })
-  isDeleted: boolean;
-
+  isDeleted!: boolean;
+ 
   @Prop()
   deliveredAt?: Date;
 

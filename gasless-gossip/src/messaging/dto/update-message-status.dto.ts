@@ -11,11 +11,11 @@ import {
   export class UpdateMessageStatusDto {
     @IsString()
     @IsNotEmpty()
-    messageId: string;
+    messageId!: string;
   
     @IsEnum(MessageStatus)
     @IsNotEmpty()
-    status: MessageStatus;
+    status!: MessageStatus;
   
     @IsOptional()
     @IsDateString()

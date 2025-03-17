@@ -10,19 +10,19 @@ import {
   export class CreateTokenTransferDto {
     @IsString()
     @IsNotEmpty()
-    amount: string;
+    amount!: string;
   
     @IsString()
     @IsNotEmpty()
-    tokenAddress: string;
+    tokenAddress!: string;
   
     @IsString()
     @IsNotEmpty()
-    tokenSymbol: string;
+    tokenSymbol!: string;
   
     @IsNumber()
     @IsNotEmpty()
-    tokenDecimals: number;
+    tokenDecimals!: number;
   
     @IsOptional()
     @IsString()
@@ -30,5 +30,5 @@ import {
   
     @IsEnum(["pending", "confirmed", "failed"])
     @IsNotEmpty()
-    status: "pending" | "confirmed" | "failed";
+    status!: "pending" | "confirmed" | "failed";
   }
