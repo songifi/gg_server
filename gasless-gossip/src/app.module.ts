@@ -14,6 +14,8 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { MessageModule } from './messaging/message.module';
+import { ConversationModule } from './conversation/conversation.module';
+
 
 @Module({
   imports: [
@@ -30,6 +32,7 @@ import { MessageModule } from './messaging/message.module';
     ChatModule,
     LoggerModule,
     MessageModule,
+    ConversationModule
   ],
   controllers: [AppController],
   providers: [AppService, LoggingService],
