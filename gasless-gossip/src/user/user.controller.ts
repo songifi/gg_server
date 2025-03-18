@@ -16,11 +16,12 @@ import {
   } from '@nestjs/common';
   import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiQuery, ApiParam } from '@nestjs/swagger';
   import { UserService } from './user.service';
-  import { CreateUserDto } from './dto/create-user.dto';
-  import { UpdateUserDto } from './dto/update-user.dto';
-  import { UserResponseDto } from './dto/user-response.dto';
-  import { UserProfileDto } from './dto/user-profile.dto';
-  import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CreateUserDto } from 'src/modules/user/dto/create-user.dto';
+import { UserResponseDto } from 'src/modules/user/dto/user-response.dto';
+import { JwtAuthGuard } from 'src/authentication/guards/jwt.guard';
+import { UserProfileDto } from 'src/modules/user/dto/user-profile.dto';
+import { UpdateUserDto } from 'src/modules/user/dto/update-user.dto';
+
   
   @ApiTags('users')
   @Controller('users')
@@ -104,7 +105,7 @@ import {
     @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'User not found' })
     async getProfile(
       @Param('username') username: string,
-      @Request() req
+      @Request() req:any
     ): Promise<UserProfileDto> {
       // Extract current user ID from JWT if available
       const currentUserId = req.user?.userId;
@@ -133,7 +134,7 @@ import {
     async update(
       @Param('id') id: string, 
       @Body() updateUserDto: UpdateUserDto,
-      @Request() req
+      @Request() req:any
     ): Promise<UserResponseDto> {
       // Ensure users can only update their own profile (unless admin)
       if (req.user.userId !== id && req.user.role !== 'admin') {
@@ -153,7 +154,7 @@ import {
     @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'User not found' })
     async remove(
       @Param('id') id: string,
-      @Request() req
+      @Request() req:any
     ): Promise<void> {
       // Ensure users can only delete their own account (unless admin)
       if (req.user.userId !== id && req.user.role !== 'admin') {
@@ -174,7 +175,7 @@ import {
     async associateWallet(
       @Param('id') id: string,
       @Body() body: { walletAddress: string },
-      @Request() req
+      @Request() req:any
     ): Promise<UserResponseDto> {
       // Ensure users can only update their own wallet (unless admin)
       if (req.user.userId !== id && req.user.role !== 'admin') {

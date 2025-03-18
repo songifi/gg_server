@@ -13,26 +13,32 @@ import { Model } from 'mongoose';
 import { BlacklistedToken } from 'src/modules/user/schemas/blacklist.schema';
 import { UserDocument } from 'src/modules/user/schemas/user.schema';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import * as crypto from 'crypto';  
+import { UserService } from 'src/user/user.service';
 import { UsersService } from 'src/users/provider/users.service';
+
 
 @Injectable()
 export class AuthenticationService {
   private readonly MAX_FAILED_ATTEMPTS = 5;
   private readonly LOCK_TIME = 30 * 60 * 1000; // 30 minutes
+  private challenges: Record<string, string> = {};  
+
   constructor(
     private readonly configService: ConfigService,
-    private readonly userService: UsersService,
+    private readonly userService: UserService,
+    private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     @InjectModel('Blacklist')
     private readonly blacklistModel: Model<BlacklistedToken>,
   ) {}
 
   async create(params: CreateUserDto): Promise<UserDocument | null> {
-    return await this.userService.signUp(params);
+    return await this.usersService.signUp(params);
   }
 
   async validateUser(email: string, password: string): Promise<UserDocument | null> {
-    const user = await this.userService.findByEmail(email);
+    const user = await this.usersService.findByEmail(email);
 
     if (!user || !user.passwordHash) {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
@@ -49,7 +55,7 @@ export class AuthenticationService {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
 
-    await this.userService.resetFailedAttempts(user.id);
+    await this.usersService.resetFailedAttempts(user.id);
 
     return user;
   }
@@ -82,7 +88,7 @@ export class AuthenticationService {
     const accessToken = this.jwtService.sign(payload, opt);
     const refreshToken = this.jwtService.sign(payload, refreshOpt);
 
-    await this.userService.updateRefreshToken(user._id as string, refreshToken);
+    await this.usersService.updateRefreshToken(user._id as string, refreshToken);
     return { accessToken, refreshToken };
   }
 
@@ -91,7 +97,7 @@ export class AuthenticationService {
   ): Promise<{ accessToken: string; refreshToken: string }> {
     try {
       const decoded = this.jwtService.verify(refreshToken);
-      const user = await this.userService.findById(decoded.sub);
+      const user = await this.usersService.findById(decoded.sub);
 
       if (!user || user.refreshTokens.includes(refreshToken) === false) {
         throw new UnauthorizedException('Invalid refresh token');
@@ -104,7 +110,7 @@ export class AuthenticationService {
   }
 
   async logout(userId: string): Promise<{ message: string }> {
-    await this.userService.clearRefreshToken(userId);
+    await this.usersService.clearRefreshToken(userId);
     return { message: 'Logged out successfully' };
   }
 
@@ -124,4 +130,20 @@ export class AuthenticationService {
   async removeExpiredTokens() {
     await this.blacklistModel.deleteMany({ expiresAt: { $lt: new Date() } });
   }
+
+  // Generate a challenge for the specified wallet address  
+  generateChallenge(walletAddress: string): string {  
+    const challenge = crypto.randomBytes(32).toString('hex');  
+    this.challenges[walletAddress] = challenge;  
+    return challenge;  
+  }  
+
+  getChallenge(walletAddress: string): string | undefined {  
+    return this.challenges[walletAddress];  
+  }  
+
+  deleteChallenge(walletAddress: string) {  
+    delete this.challenges[walletAddress];  
+  }  
+
 }

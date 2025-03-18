@@ -1,0 +1,51 @@
+### User Signup  
+POST http://localhost:3000/authentication/signup  
+Content-Type: application/json  
+
+{  
+  "email": "test@example.com",  
+  "password": "password123"  
+}  
+
+### User Login  
+POST http://localhost:3000/authentication/login  
+Content-Type: application/json  
+
+{  
+  "email": "test@example.com",  
+  "password": "password123"  
+}  
+
+### User Logout (Assuming you have a valid token from login)  
+POST http://localhost:3000/authentication/logout  
+Authorization: Bearer YOUR_ACCESS_TOKEN_HERE  
+
+### Get Profile (Assuming you have a valid token from login)  
+GET http://localhost:3000/authentication/profile  
+Authorization: Bearer YOUR_ACCESS_TOKEN_HERE  
+
+### Create Challenge  
+POST http://localhost:3000/authentication/wallet/challenge  
+Content-Type: application/json 
+{
+  "walletAddress": "0xYourWalletAddress"  
+} 
+  
+
+### Verify Signature  
+POST http://localhost:3000/authentication/wallet/verify  
+Content-Type: application/json  
+
+{  
+  "signature": "0578e6513a73ae06f8bb40e9c3df2199d7118186a184b9cda3711e83f5617a8c",  
+  "walletAddress": "0xYourWalletAddress"  
+}  
+
+### Associate Wallet  
+POST http://localhost:3000/authentication/wallet/associate  
+Content-Type: application/json  
+Authorization: Bearer YOUR_ACCESS_TOKEN_HERE  
+
+{  
+  "walletAddress": "0xYourWalletAddress"  
+}  

@@ -1,6 +1,8 @@
-port { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
-import { User } from '../../users/schemas/user.schema';
+// import { User } from '../../users/schemas/user.schema';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ConversationType } from '../enums/conversation.enum';
+import { User } from 'src/modules/user/interfaces/user.interface';
 
 
 @Schema({ timestamps: true })
@@ -10,7 +12,7 @@ export class Conversation {
     enum: Object.values(ConversationType),
     required: true
   })
-  type: ConversationType;
+  type!: ConversationType;
 
   @Prop({
     type: String,
@@ -37,7 +39,7 @@ export class Conversation {
     ],
     required: true
   })
-  participants: User[];
+  participants!: User[];
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -49,10 +51,10 @@ export class Conversation {
   admin?: User;
 
   @Prop({ type: Boolean, default: true })
-  isActive: boolean;
+  isActive!: boolean;
 
   @Prop({ type: Date, default: Date.now })
-  lastMessageAt: Date;
+  lastMessageAt!: Date;
 }
 
 export type ConversationDocument = Conversation & Document;

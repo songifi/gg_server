@@ -15,7 +15,6 @@ import {
     IsDate
   } from 'class-validator';
   import { Type } from 'class-transformer';
-  import { ConversationType } from '../schemas/conversation.schema';
   
 
 

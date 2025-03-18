@@ -1,14 +1,13 @@
-up.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 @Schema({ timestamps: true })
 export class ContactGroupDocument extends Document {
   @Prop({ type: String, required: true, index: true })
-  owner: string;
+  owner!: string;
 
   @Prop({ type: String, required: true })
-  name: string;
+  name!: string;
 
   @Prop({ type: String })
   description?: string;

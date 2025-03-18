@@ -17,7 +17,7 @@ import { AuthenticationMiddleware } from './authentication/middleware/authentica
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { MessageModule } from './messaging/message.module';
-import { ConversationModule } from './conversation/conversation.module';
+// import { ConversationModule } from './conversation/conversation.module';
 
 
 @Module({
@@ -43,7 +43,7 @@ import { ConversationModule } from './conversation/conversation.module';
     ChatModule,
     LoggerModule,
     MessageModule,
-    ConversationModule
+    // ConversationModule
   ],
   controllers: [AppController],
   providers: [
@@ -59,8 +59,8 @@ import { ConversationModule } from './conversation/conversation.module';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(AuthenticationMiddleware)
-      .exclude('auth/(.*)') // Exclude auth endpoints like login/signup if needed
-      .forRoutes('*'); // Apply to all routes
+      // .apply(AuthenticationMiddleware)
+      // .exclude('auth/(.*)') // Exclude auth endpoints like login/signup if needed
+      // .forRoutes('*'); // Apply to all routes
   }
 }

@@ -4,7 +4,7 @@ import { ContactStatus } from '../enums/contact-status.enum';
 export class CreateContactDto {
   @IsNotEmpty()
   @IsString()
-  user: string;
+  user!: string;
 
   @IsOptional()
   @IsString()

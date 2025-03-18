@@ -3,12 +3,12 @@ import { Injectable, NotFoundException, ConflictException, BadRequestException }
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { UserDocument } from './schemas/user.schema';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UserResponseDto } from './dto/user-response.dto';
-import { UserProfileDto } from './dto/user-profile.dto';
-import { UserStatus } from './enums/user-status.enum';
+import { UserStatus } from 'src/modules/user/enums/user-status.enum';
+import { UserDocument } from 'src/modules/user/schemas/user.schema';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { UserResponseDto } from 'src/modules/user/dto/user-response.dto';
+import { UserProfileDto } from 'src/modules/user/dto/user-profile.dto';
+import { UpdateUserDto } from 'src/modules/user/dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -46,7 +46,7 @@ export class UserService {
       username: createUserDto.username,
       email: createUserDto.email,
       passwordHash,
-      displayName: createUserDto.displayName || createUserDto.username,
+      displayName: createUserDto.username || createUserDto.username,
       walletAddresses: createUserDto.walletAddress ? [createUserDto.walletAddress] : [],
       primaryWalletAddress: createUserDto.walletAddress || null,
       status: UserStatus.ACTIVE,
@@ -109,14 +109,13 @@ export class UserService {
     if (currentUserId) {
       const currentUser = await this.userModel.findById(currentUserId).exec();
       if (currentUser) {
-        isContact = currentUser.contacts.includes(user._id.toString());
+        isContact = currentUser.contacts.includes(user.id.toString());
       }
     }
 
     // Convert to object and add the isContact flag
     const userObj = user.toObject();
-    userObj.isContact = isContact;
-    
+    userObj   
     return new UserProfileDto(userObj);
   }
 
@@ -212,7 +211,7 @@ export class UserService {
       walletAddresses: walletAddress 
     }).exec();
     
-    if (existingUser && existingUser._id.toString() !== userId) {
+    if (existingUser && existingUser.id.toString() !== userId) {
       throw new ConflictException('Wallet address is already associated with another user');
     }
 

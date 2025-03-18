@@ -43,4 +43,9 @@ export class CreateUserDto {
   @IsArray()
   @IsEnum(UserRole, { each: true, message: 'Invalid role' })
   role?: UserRole[];
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  walletAddress?: string;
 }

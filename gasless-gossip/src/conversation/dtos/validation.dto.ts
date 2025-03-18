@@ -1,3 +1,5 @@
+import { CreateGroupConversationDto } from "./creategroup-conversation.dto";
+import { CreateDirectConversationDto } from "./direct-conversation.dto";
 
 // Validation Functions
 export const validateDirectConversationDto = (dto: CreateDirectConversationDto): boolean => {

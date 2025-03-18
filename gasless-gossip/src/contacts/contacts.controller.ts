@@ -21,7 +21,6 @@ import {
     ApiResponse,
     ApiTags,
   } from '@nestjs/swagger';
-  import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
   import { ContactsService } from './contacts.service';
   import { CreateContactDto } from './dto/create-contact.dto';
   import { UpdateContactDto } from './dto/update-contact.dto';
@@ -30,6 +29,7 @@ import {
   import { ContactResponseDto } from './dto/contact-response.dto';
   import { ContactGroupResponseDto } from './dto/contact-group-response.dto';
   import { ContactStatus } from './enums/contact-status.enum';
+import { JwtAuthGuard } from 'src/authentication/guards/jwt.guard';
   
   @ApiTags('contacts')
   @Controller('contacts')
@@ -44,7 +44,7 @@ import {
     @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid input data' })
     @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Contact already exists' })
     async createContact(
-      @Request() req,
+      @Request() req:any,
       @Body() createContactDto: CreateContactDto,
     ): Promise<ContactResponseDto> {
       return this.contactsService.createContact(req.user.userId, createContactDto);
@@ -60,7 +60,7 @@ import {
     @ApiQuery({ name: 'search', required: false, description: 'Search by nickname or notes' })
     @ApiResponse({ status: HttpStatus.OK, description: 'Contacts retrieved successfully' })
     async getContacts(
-      @Request() req,
+      @Request() req:any,
       @Query('page') page?: number,
       @Query('limit') limit?: number,
       @Query('group') group?: string,
@@ -83,7 +83,7 @@ import {
         limit ? parseInt(String(limit), 10) : 20,
         group,
         status,
-        favorite === undefined ? undefined : favorite === true || favorite === 'true',
+        favorite === undefined ? undefined : favorite === true || favorite === false,
         search,
       );
     }
@@ -94,7 +94,7 @@ import {
     @ApiQuery({ name: 'limit', required: false, description: 'Items per page (default: 20)' })
     @ApiResponse({ status: HttpStatus.OK, description: 'Blocked contacts retrieved successfully' })
     async getBlockedContacts(
-      @Request() req,
+      @Request() req:any,
       @Query('page') page?: number,
       @Query('limit') limit?: number,
     ): Promise<{ contacts: ContactResponseDto[], total: number, page: number, pages: number }> {
@@ -111,7 +111,7 @@ import {
     @ApiResponse({ status: HttpStatus.OK, description: 'Contact retrieved successfully', type: ContactResponseDto })
     @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Contact not found' })
     async getContact(
-      @Request() req,
+      @Request() req:any,
       @Param('id') id: string,
     ): Promise<ContactResponseDto> {
       return this.contactsService.getContact(req.user.userId, id);
@@ -124,7 +124,7 @@ import {
     @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Contact not found' })
     @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid input data' })
     async updateContact(
-      @Request() req,
+      @Request() req:any,
       @Param('id') id: string,
       @Body() updateContactDto: UpdateContactDto,
     ): Promise<ContactResponseDto> {
@@ -138,7 +138,7 @@ import {
     @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Contact deleted successfully' })
     @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Contact not found' })
     async deleteContact(
-      @Request() req,
+      @Request() req:any,
       @Param('id') id: string,
     ): Promise<void> {
       return this.contactsService.deleteContact(req.user.userId, id);
@@ -150,7 +150,7 @@ import {
     @ApiResponse({ status: HttpStatus.OK, description: 'Contact blocked successfully', type: ContactResponseDto })
     @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Contact not found' })
     async blockContact(
-      @Request() req,
+      @Request() req:any,
       @Param('id') id: string,
     ): Promise<ContactResponseDto> {
       return this.contactsService.blockContact(req.user.userId, id);
@@ -162,7 +162,7 @@ import {
     @ApiResponse({ status: HttpStatus.OK, description: 'Contact unblocked successfully', type: ContactResponseDto })
     @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Contact not found' })
     async unblockContact(
-      @Request() req,
+      @Request() req:any,
       @Param('id') id: string,
     ): Promise<ContactResponseDto> {
       return this.contactsService.unblockContact(req.user.userId, id);
@@ -176,7 +176,7 @@ import {
     @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid input data' })
     @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Group already exists' })
     async createContactGroup(
-      @Request() req,
+      @Request() req:any,
       @Body() createContactGroupDto: CreateContactGroupDto,
     ): Promise<ContactGroupResponseDto> {
       return this.contactsService.createContactGroup(req.user.userId, createContactGroupDto);
@@ -186,7 +186,7 @@ import {
     @ApiOperation({ summary: 'Get all contact groups' })
     @ApiResponse({ status: HttpStatus.OK, description: 'Groups retrieved successfully', type: [ContactGroupResponseDto] })
     async getContactGroups(
-      @Request() req,
+      @Request() req:any,
     ): Promise<ContactGroupResponseDto[]> {
       return this.contactsService.getContactGroups(req.user.userId);
     }
@@ -197,7 +197,7 @@ import {
     @ApiResponse({ status: HttpStatus.OK, description: 'Group retrieved successfully', type: ContactGroupResponseDto })
     @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Group not found' })
     async getContactGroup(
-      @Request() req,
+      @Request() req:any,
       @Param('id') id: string,
     ): Promise<ContactGroupResponseDto> {
       return this.contactsService.getContactGroup(req.user.userId, id);
@@ -210,7 +210,7 @@ import {
     @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Group not found' })
     @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid input data' })
     async updateContactGroup(
-      @Request() req,
+      @Request() req:any,
       @Param('id') id: string,
       @Body() updateContactGroupDto: UpdateContactGroupDto,
     ): Promise<ContactGroupResponseDto> {
@@ -224,7 +224,7 @@ import {
     @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Group deleted successfully' })
     @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Group not found' })
     async deleteContactGroup(
-      @Request() req,
+      @Request() req:any,
       @Param('id') id: string,
     ): Promise<void> {
       return this.contactsService.deleteContactGroup(req.user.userId, id);
@@ -237,7 +237,7 @@ import {
     @ApiResponse({ status: HttpStatus.OK, description: 'Contact added to group successfully', type: ContactResponseDto })
     @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Contact or group not found' })
     async addContactToGroup(
-      @Request() req,
+      @Request() req:any,
       @Param('contactId') contactId: string,
       @Param('groupId') groupId: string,
     ): Promise<ContactResponseDto> {
@@ -251,7 +251,7 @@ import {
     @ApiResponse({ status: HttpStatus.OK, description: 'Contact removed from group successfully', type: ContactResponseDto })
     @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Contact not found' })
     async removeContactFromGroup(
-      @Request() req,
+      @Request() req:any,
       @Param('contactId') contactId: string,
       @Param('groupId') groupId: string,
     ): Promise<ContactResponseDto> {

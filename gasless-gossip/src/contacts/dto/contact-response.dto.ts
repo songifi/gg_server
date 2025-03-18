@@ -4,10 +4,10 @@ import { ContactStatus } from '../enums/contact-status.enum';
 @Exclude()
 export class ContactResponseDto {
   @Expose()
-  id: string;
+  id!: string;
 
   @Expose()
-  user: string;
+  user!: string;
 
   @Expose()
   nickname?: string;
@@ -16,19 +16,19 @@ export class ContactResponseDto {
   notes?: string;
 
   @Expose()
-  groups: string[];
+  groups!: string[];
 
   @Expose()
-  status: ContactStatus;
+  status!: ContactStatus;
 
   @Expose()
-  isFavorite: boolean;
+  isFavorite!: boolean;
 
   @Expose()
-  createdAt: Date;
+  createdAt!: Date;
 
   @Expose()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   constructor(partial: Partial<ContactResponseDto>) {
     Object.assign(this, partial);
