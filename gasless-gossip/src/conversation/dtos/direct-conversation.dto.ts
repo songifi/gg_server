@@ -22,5 +22,5 @@ export class CreateDirectConversationDto {
     @ArrayMinSize(2)
     @ArrayMaxSize(2)
     @IsMongoId({ each: true })
-    participants: string[];
+    participants!: string[];
   }

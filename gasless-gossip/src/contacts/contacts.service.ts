@@ -488,7 +488,7 @@ export class ContactsService {
     }).exec();
     
     if (groups.length !== groupIds.length) {
-      const foundIds = groups.map(group => group._id.toString());
+      const foundIds = groups.map(group => group.id.toString());
       const missingIds = groupIds.filter(id => !foundIds.includes(id));
       throw new BadRequestException(`Groups with IDs ${missingIds.join(', ')} not found`);
     }

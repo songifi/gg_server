@@ -20,15 +20,15 @@ export class CreateGroupConversationDto {
     @IsString()
     @MinLength(1)
     @MaxLength(100)
-    title: string;
+    title!: string;
   
 
     @IsArray()
     @ArrayMinSize(2)
     @IsMongoId({ each: true })
-    participants: string[];
+    participants!: string[];
   
 
     @IsMongoId()
-    admin: string;
+    admin!: string;
   }

@@ -3,10 +3,10 @@ import { Exclude, Expose } from 'class-transformer';
 @Exclude()
 export class ContactGroupResponseDto {
   @Expose()
-  id: string;
+  id!: string;
 
   @Expose()
-  name: string;
+  name!: string;
 
   @Expose()
   description?: string;
@@ -15,10 +15,10 @@ export class ContactGroupResponseDto {
   color?: string;
 
   @Expose()
-  createdAt: Date;
+  createdAt!: Date;
 
   @Expose()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   constructor(partial: Partial<ContactGroupResponseDto>) {
     Object.assign(this, partial);

@@ -1,3 +1,4 @@
+import { ConversationType } from "../enums/conversation.enum";
 
 // Base Conversation Interface
 export interface IConversation {
