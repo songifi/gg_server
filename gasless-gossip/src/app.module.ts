@@ -17,8 +17,7 @@ import { AuthenticationMiddleware } from './authentication/middleware/authentica
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { MessageModule } from './messaging/message.module';
-import { ConversationModule } from './conversation/conversation.module';
-
+// import { ConversationModule } from './conversation/conversation.module';
 
 @Module({
   imports: [
@@ -43,7 +42,7 @@ import { ConversationModule } from './conversation/conversation.module';
     ChatModule,
     LoggerModule,
     MessageModule,
-    ConversationModule
+    // ConversationModule
   ],
   controllers: [AppController],
   providers: [

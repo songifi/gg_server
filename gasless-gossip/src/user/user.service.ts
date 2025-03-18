@@ -1,39 +1,52 @@
 // src/modules/user/user.service.ts
-import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { UserDocument } from './schemas/user.schema';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UserResponseDto } from './dto/user-response.dto';
-import { UserProfileDto } from './dto/user-profile.dto';
-import { UserStatus } from './enums/user-status.enum';
+import { CreateUserDto } from 'src/modules/user/dto/create-user.dto';
+import { UserDocument } from 'src/modules/user/schemas/user.schema';
+import { UserResponseDto } from 'src/modules/user/dto/user-response.dto';
+import { UserProfileDto } from 'src/modules/user/dto/user-profile.dto';
+import { UpdateUserDto } from 'src/modules/user/dto/update-user.dto';
+import { UserStatus } from 'src/modules/user/enums/user-status.enum';
+// import { UserDocument } from './schemas/user.schema';
+// import { CreateUserDto } from './dto/create-user.dto';
+// import { UpdateUserDto } from './dto/update-user.dto';
+// import { UserResponseDto } from './dto/user-response.dto';
+// import { UserProfileDto } from './dto/user-profile.dto';
+// import { UserStatus } from './enums/user-status.enum';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectModel('User') private readonly userModel: Model<UserDocument>,
-  ) {}
+  constructor(@InjectModel('User') private readonly userModel: Model<UserDocument>) {}
 
   /**
    * Create a new user
    */
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
     // Check if username is already taken
-    const existingUsername = await this.userModel.findOne({ 
-      username: createUserDto.username 
-    }).exec();
-    
+    const existingUsername = await this.userModel
+      .findOne({
+        username: createUserDto.username,
+      })
+      .exec();
+
     if (existingUsername) {
       throw new ConflictException('Username is already taken');
     }
 
     // Check if email is already registered
-    const existingEmail = await this.userModel.findOne({ 
-      email: createUserDto.email 
-    }).exec();
-    
+    const existingEmail = await this.userModel
+      .findOne({
+        email: createUserDto.email,
+      })
+      .exec();
+
     if (existingEmail) {
       throw new ConflictException('Email is already registered');
     }
@@ -59,22 +72,21 @@ export class UserService {
   /**
    * Find all users with pagination
    */
-  async findAll(page = 1, limit = 10): Promise<{ users: UserResponseDto[], total: number, page: number, pages: number }> {
+  async findAll(
+    page = 1,
+    limit = 10,
+  ): Promise<{ users: UserResponseDto[]; total: number; page: number; pages: number }> {
     const skip = (page - 1) * limit;
-    
+
     const [users, total] = await Promise.all([
-      this.userModel.find()
-        .skip(skip)
-        .limit(limit)
-        .sort({ createdAt: -1 })
-        .exec(),
+      this.userModel.find().skip(skip).limit(limit).sort({ createdAt: -1 }).exec(),
       this.userModel.countDocuments().exec(),
     ]);
 
     const pages = Math.ceil(total / limit);
 
     return {
-      users: users.map(user => new UserResponseDto(user.toObject())),
+      users: users.map((user) => new UserResponseDto(user.toObject())),
       total,
       page,
       pages,
@@ -86,11 +98,11 @@ export class UserService {
    */
   async findOne(id: string): Promise<UserResponseDto> {
     const user = await this.userModel.findById(id).exec();
-    
+
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-    
+
     return new UserResponseDto(user.toObject());
   }
 
@@ -99,7 +111,7 @@ export class UserService {
    */
   async getProfile(username: string, currentUserId?: string): Promise<UserProfileDto> {
     const user = await this.userModel.findOne({ username }).exec();
-    
+
     if (!user) {
       throw new NotFoundException(`User with username ${username} not found`);
     }
@@ -109,14 +121,14 @@ export class UserService {
     if (currentUserId) {
       const currentUser = await this.userModel.findById(currentUserId).exec();
       if (currentUser) {
-        isContact = currentUser.contacts.includes(user._id.toString());
+        isContact = currentUser.contacts.includes(user.id.toString());
       }
     }
 
     // Convert to object and add the isContact flag
     const userObj = user.toObject();
-    userObj.isContact = isContact;
-    
+    // userObj.isContact = isContact;
+
     return new UserProfileDto(userObj);
   }
 
@@ -125,7 +137,7 @@ export class UserService {
    */
   async update(id: string, updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
     const user = await this.userModel.findById(id).exec();
-    
+
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
@@ -170,11 +182,11 @@ export class UserService {
    */
   async remove(id: string): Promise<void> {
     const user = await this.userModel.findById(id).exec();
-    
+
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-    
+
     // Soft delete by setting status to DELETED
     user.status = UserStatus.DELETED;
     await user.save();
@@ -192,14 +204,16 @@ export class UserService {
    * Find user by wallet address
    */
   async findByWalletAddress(walletAddress: string): Promise<UserResponseDto> {
-    const user = await this.userModel.findOne({ 
-      walletAddresses: walletAddress 
-    }).exec();
-    
+    const user = await this.userModel
+      .findOne({
+        walletAddresses: walletAddress,
+      })
+      .exec();
+
     if (!user) {
       throw new NotFoundException(`User with wallet address ${walletAddress} not found`);
     }
-    
+
     return new UserResponseDto(user.toObject());
   }
 
@@ -208,16 +222,18 @@ export class UserService {
    */
   async associateWalletAddress(userId: string, walletAddress: string): Promise<UserResponseDto> {
     // Check if wallet is already associated with another user
-    const existingUser = await this.userModel.findOne({ 
-      walletAddresses: walletAddress 
-    }).exec();
-    
-    if (existingUser && existingUser._id.toString() !== userId) {
+    const existingUser = await this.userModel
+      .findOne({
+        walletAddresses: walletAddress,
+      })
+      .exec();
+
+    if (existingUser && existingUser.id.toString() !== userId) {
       throw new ConflictException('Wallet address is already associated with another user');
     }
 
     const user = await this.userModel.findById(userId).exec();
-    
+
     if (!user) {
       throw new NotFoundException(`User with ID ${userId} not found`);
     }
@@ -226,7 +242,7 @@ export class UserService {
     if (!user.walletAddresses.includes(walletAddress)) {
       user.walletAddresses.push(walletAddress);
     }
-    
+
     // Set as primary if no primary is set
     if (!user.primaryWalletAddress) {
       user.primaryWalletAddress = walletAddress;
@@ -240,48 +256,52 @@ export class UserService {
    * Update last seen timestamp
    */
   async updateLastSeen(userId: string): Promise<void> {
-    await this.userModel.findByIdAndUpdate(
-      userId,
-      { lastSeen: new Date() }
-    ).exec();
+    await this.userModel.findByIdAndUpdate(userId, { lastSeen: new Date() }).exec();
   }
 
   /**
    * Search users by username, display name, or wallet address
    */
-  async searchUsers(query: string, page = 1, limit = 10): Promise<{ users: UserResponseDto[], total: number, page: number, pages: number }> {
+  async searchUsers(
+    query: string,
+    page = 1,
+    limit = 10,
+  ): Promise<{ users: UserResponseDto[]; total: number; page: number; pages: number }> {
     const skip = (page - 1) * limit;
-    
+
     // Create search regex (case insensitive)
     const searchRegex = new RegExp(query, 'i');
-    
+
     const [users, total] = await Promise.all([
-      this.userModel.find({
-        $or: [
-          { username: searchRegex },
-          { displayName: searchRegex },
-          { walletAddresses: query } // Exact match for wallet address
-        ],
-        status: { $ne: UserStatus.DELETED } // Exclude deleted users
-      })
+      this.userModel
+        .find({
+          $or: [
+            { username: searchRegex },
+            { displayName: searchRegex },
+            { walletAddresses: query }, // Exact match for wallet address
+          ],
+          status: { $ne: UserStatus.DELETED }, // Exclude deleted users
+        })
         .skip(skip)
         .limit(limit)
         .sort({ username: 1 })
         .exec(),
-      this.userModel.countDocuments({
-        $or: [
-          { username: searchRegex },
-          { displayName: searchRegex },
-          { walletAddresses: query }
-        ],
-        status: { $ne: UserStatus.DELETED }
-      }).exec(),
+      this.userModel
+        .countDocuments({
+          $or: [
+            { username: searchRegex },
+            { displayName: searchRegex },
+            { walletAddresses: query },
+          ],
+          status: { $ne: UserStatus.DELETED },
+        })
+        .exec(),
     ]);
 
     const pages = Math.ceil(total / limit);
 
     return {
-      users: users.map(user => new UserResponseDto(user.toObject())),
+      users: users.map((user) => new UserResponseDto(user.toObject())),
       total,
       page,
       pages,

@@ -4,7 +4,7 @@ export class CreateContactGroupDto {
   @IsNotEmpty()
   @IsString()
   @MaxLength(30)
-  name: string;
+  name!: string;
 
   @IsOptional()
   @IsString()

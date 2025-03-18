@@ -5,10 +5,10 @@ import { ContactStatus } from '../enums/contact-status.enum';
 @Schema({ timestamps: true })
 export class ContactDocument extends Document {
   @Prop({ type: String, required: true, index: true })
-  owner: string;
+  owner!: string;
 
   @Prop({ type: String, required: true, index: true })
-  user: string;
+  user!: string;
 
   @Prop({ type: String })
   nickname?: string;
@@ -17,13 +17,13 @@ export class ContactDocument extends Document {
   notes?: string;
 
   @Prop({ type: [String], default: [] })
-  groups: string[];
+  groups!: string[];
 
   @Prop({ type: String, enum: ContactStatus, default: ContactStatus.ACTIVE })
-  status: ContactStatus;
+  status!: ContactStatus;
 
   @Prop({ type: Boolean, default: false })
-  isFavorite: boolean;
+  isFavorite!: boolean;
 }
 
 export const ContactSchema = SchemaFactory.createForClass(ContactDocument);
