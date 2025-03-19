@@ -1,4 +1,12 @@
-import { IsNotEmpty, IsString, IsOptional, IsEnum, IsBoolean, IsArray, MaxLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsBoolean,
+  IsArray,
+  MaxLength,
+} from 'class-validator';
 import { ContactStatus } from '../enums/contact-status.enum';
 
 export class CreateContactDto {

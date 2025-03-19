@@ -1,26 +1,24 @@
 import { Document, Schema as MongooseSchema } from 'mongoose';
-// import { User } from '../../users/schemas/user.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ConversationType } from '../enums/conversation.enum';
 import { User } from 'src/modules/user/interfaces/user.interface';
-
 
 @Schema({ timestamps: true })
 export class Conversation {
   @Prop({
     type: String,
     enum: Object.values(ConversationType),
-    required: true
+    required: true,
   })
   type!: ConversationType;
 
   @Prop({
     type: String,
-    required: function(this: ConversationDocument) {
+    required: function (this: ConversationDocument) {
       return this.type === ConversationType.GROUP;
     },
     trim: true,
-    maxlength: 100
+    maxlength: 100,
   })
   title?: string;
 
@@ -28,25 +26,26 @@ export class Conversation {
     type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }],
     validate: [
       {
-        validator: function(this: ConversationDocument, participants: string[]) {
+        validator: function (this: ConversationDocument, participants: string[]) {
           if (this.type === ConversationType.DIRECT) {
             return participants.length === 2;
           }
           return participants.length >= 2;
         },
-        message: 'Direct conversations must have exactly 2 participants, group conversations must have at least 2'
-      }
+        message:
+          'Direct conversations must have exactly 2 participants, group conversations must have at least 2',
+      },
     ],
-    required: true
+    required: true,
   })
   participants!: User[];
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     ref: 'User',
-    required: function(this: ConversationDocument) {
+    required: function (this: ConversationDocument) {
       return this.type === ConversationType.GROUP;
-    }
+    },
   })
   admin?: User;
 

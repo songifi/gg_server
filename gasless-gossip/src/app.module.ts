@@ -19,7 +19,6 @@ import { APP_GUARD } from '@nestjs/core';
 import { MessageModule } from './messaging/message.module';
 // import { ConversationModule } from './conversation/conversation.module';
 
-
 @Module({
   imports: [
     ConfigModule,
@@ -59,8 +58,8 @@ import { MessageModule } from './messaging/message.module';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      // .apply(AuthenticationMiddleware)
-      // .exclude('auth/(.*)') // Exclude auth endpoints like login/signup if needed
-      // .forRoutes('*'); // Apply to all routes
+      .apply(AuthenticationMiddleware)
+      .exclude('auth/(.*)') // Exclude auth endpoints like login/signup if needed
+      .forRoutes('*'); // Apply to all routes
   }
 }
