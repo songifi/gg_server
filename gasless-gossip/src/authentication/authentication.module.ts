@@ -5,13 +5,16 @@ import { AuthenticationService } from './authentication.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UsersModule } from 'src/users/users.module';
 import { BlacklistSchema } from 'src/modules/user/schemas/blacklist.schema';
-import { UsersService } from 'src/users/provider/users.service';
+import { UserService } from 'src/user/user.service';
+import { UserModule } from 'src/user/user.module';
+import { UsersModule } from 'src/users/users.module';
+import { UserSchema } from 'src/modules/user/schemas/user.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'Blacklist', schema: BlacklistSchema }]),
+    MongooseModule.forFeature([{ name: 'Blacklist', schema: BlacklistSchema }, {name: 'User', schema: UserSchema}]),
+    UserModule,
     UsersModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -24,8 +27,8 @@ import { UsersService } from 'src/users/provider/users.service';
       }),
     }),
   ],
-  providers: [AuthenticationService, JwtService, JwtStrategy],
+  providers: [AuthenticationService, JwtService, JwtStrategy, UserService],
   controllers: [AuthenticationController],
-  exports: [AuthenticationService, JwtStrategy],
+  exports: [AuthenticationService, JwtStrategy, UserService, JwtService],
 })
 export class AuthenticationModule {}

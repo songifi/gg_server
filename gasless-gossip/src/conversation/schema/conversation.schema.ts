@@ -1,8 +1,7 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
-// import { User } from '../../users/schemas/user.schema';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ConversationType } from '../enums/conversation.enum';
-import { User } from 'src/users/entities/user.entity';
+import { User } from 'src/modules/user/interfaces/user.interface';
 
 @Schema({ timestamps: true })
 export class Conversation {
