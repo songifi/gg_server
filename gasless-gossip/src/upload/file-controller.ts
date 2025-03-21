@@ -29,8 +29,8 @@ import {
 } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtAuthGuard } from '../auths/guards/jwt-auth.guard';
+import { CurrentUser } from '../auths/decorators/current-user.decorator';
 import { FileService } from './file.service';
 import { FileUploadDto } from './dto/file-upload.dto';
 

@@ -21,9 +21,9 @@ import {
     ApiResponse,
     ApiTags,
   } from '@nestjs/swagger';
-  import { Roles } from '../auth/decorators/roles.decorator';
-  import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-  import { RolesGuard } from '../auth/guards/roles.guard';
+  import { Roles } from '../auths/decorators/roles.decorator';
+  import { JwtAuthGuard } from '../auths/guards/jwt-auth.guard';
+  import { RolesGuard } from '../auths/guards/roles.guard';
   import { ChallengesService } from './challenges.service';
   import { CreateChallengeDto } from './dto/create-challenge.dto';
   import { UpdateChallengeDto } from './dto/update-challenge.dto';

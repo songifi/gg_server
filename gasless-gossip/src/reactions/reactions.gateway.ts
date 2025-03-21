@@ -10,7 +10,7 @@ import {
   } from '@nestjs/websockets';
   import { UseGuards } from '@nestjs/common';
   import { Server, Socket } from 'socket.io';
-  import { WsJwtGuard } from '../auth/guards/ws-jwt.guard';
+  import { WsJwtGuard } from '../auths/guards/ws-jwt.guard';
   import { ReactionsService } from './reactions.service';
   import { CreateReactionDto } from './dto/create-reaction.dto';
   import { RemoveReactionDto } from './dto/remove-reaction.dto';
