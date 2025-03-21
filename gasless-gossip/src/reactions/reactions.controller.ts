@@ -20,7 +20,7 @@ import {
     ApiQuery,
     ApiBearerAuth,
   } from '@nestjs/swagger';
-  import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+  import { JwtAuthGuard } from '../auths/guards/jwt-auth.guard';
   import { ReactionsService } from './reactions.service';
   import { CreateReactionDto } from './dto/create-reaction.dto';
   import { RemoveReactionDto } from './dto/remove-reaction.dto';

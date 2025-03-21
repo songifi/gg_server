@@ -18,7 +18,7 @@ import {
     ApiTags, 
   } from '@nestjs/swagger';
   import { Throttle } from '@nestjs/throttler';
-  import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+  import { JwtAuthGuard } from '../auths/guards/jwt-auth.guard';
   import { UserSearchService } from './user-search.service';
   import { SearchUserDto, SearchField, SortOrder } from './dto/search-user.dto';
   import { UserSearchResponseDto, UserSearchResultDto } from './dto/user-search-response.dto';

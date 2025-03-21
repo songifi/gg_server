@@ -20,8 +20,8 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtAuthGuard } from '../auths/guards/jwt-auth.guard';
+import { CurrentUser } from '../auths/decorators/current-user.decorator';
 import { LargeFileService } from './large-file.service';
 import { InitChunkedUploadDto } from './dto/init-chunked-upload.dto';
 import { UploadChunkDto } from './dto/upload-chunk.dto';

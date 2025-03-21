@@ -5,7 +5,7 @@ import * as request from 'supertest';
 import { getModelToken } from '@nestjs/mongoose';
 import { UserModule } from '../user.module';
 import { UserService } from '../user.service';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auths/guards/jwt-auth.guard';
 
 describe('UserController (e2e)', () => {
   let app: INestApplication;

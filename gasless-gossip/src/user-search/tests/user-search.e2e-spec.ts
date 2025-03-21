@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auths/guards/jwt-auth.guard';
 import { UserSearchController } from '../user-search.controller';
 import { UserSearchService } from '../user-search.service';
 import { SearchField } from '../dto/search-user.dto';

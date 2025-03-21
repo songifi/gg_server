@@ -17,9 +17,9 @@ import {
     ApiResponse,
     ApiTags,
   } from '@nestjs/swagger';
-  import { Roles } from '../auth/decorators/roles.decorator';
-  import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-  import { RolesGuard } from '../auth/guards/roles.guard';
+  import { Roles } from '../auths/decorators/roles.decorator';
+  import { JwtAuthGuard } from '../auths/guards/jwt-auth.guard';
+  import { RolesGuard } from '../auths/guards/roles.guard';
   import { ReputationService } from './reputation.service';
   import { ReputationResponseDto } from './dto/reputation-response.dto';
   import { ReputationHistoryResponseDto } from './dto/reputation-history-response.dto';

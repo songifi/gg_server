@@ -4,7 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from './config/config.module';
 import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './auths/auth.module';
 import { ChatModule } from './chat/chat.module';
 import { LoggerModule } from './logger/logger.module';
 import { LoggingService } from './logger/logger.service';
@@ -19,6 +19,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { MessageModule } from './messaging/message.module';
 import { GroupModule } from './group/group.module';
 // import { ConversationModule } from './conversation/conversation.module';
+import { RoomModule } from './room/room.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { GroupModule } from './group/group.module';
     LoggerModule,
     MessageModule,
     GroupModule,
+    RoomModule,
     // ConversationModule
   ],
   controllers: [AppController],

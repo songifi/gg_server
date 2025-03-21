@@ -11,6 +11,7 @@ import { Request, Response, NextFunction } from 'express';
 import { GlobalExceptionFilter } from './utils/global-exception-filter';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+
 // import { ValidationException } from './config/exceptions/config.exceptions';
 
 async function bootstrap() {
@@ -28,7 +29,7 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('Gasless Gossip')
+    .setTitle('Gasless Gossip Api')
     .setDescription('The Gasless Gossip API documentation')
     .setVersion('1.0')
     .addBearerAuth(
