@@ -90,3 +90,71 @@ npm run test:e2e
 3. Commit your changes: `git commit -m 'Add new feature'`
 4. Push to the branch: `git push origin feature-branch`
 5. Open a Pull Request.
+
+// Security documentation for authentication:
+/*
+# Authentication Security Requirements
+## Password Requirements
+ **Length**: Passwords must be 8-32 characters long
+ **Complexity**: Passwords must include:
+   - At least one uppercase letter
+   - At least one lowercase letter
+   - At least one number OR one special character
+ **Prohibited Content**:
+   - Common words or patterns (e.g., "password", "123456", "qwerty")
+   - Sequential characters (e.g., "abc", "123")
+   - Repetitive characters (e.g., "aaa", "111")
+
+## Password Management
+ **History**: System prevents reuse of the last 5 passwords
+ **Expiration**: Passwords expire after 90 days
+ **Reset Process**: Secure password reset via email with time-limited tokens
+ **Storage**: Passwords are never stored in plain text, only as bcrypt hashes
+
+## Implementation Details
+ **Validation**: All password validation occurs on both client and server
+ **Feedback**: Specific feedback provided on failed validation
+ **Security Events**: Failed password attempts are logged and monitored
+ **Lockout Policy**: Accounts are temporarily locked after 5 failed attempts
+
+## Recommended Password Practices (User Documentation)
+- Use a passphrase of multiple words with spaces or special characters
+- Avoid using personal information in passwords
+- Use different passwords for different services
+- Consider using a password manager
+## Password Storage
+- Passwords are hashed using bcrypt with appropriate salt rounds
+- Plain text passwords are never stored in the database
+- Password validation enforces complexity requirements
+
+## JWT Implementation
+- Access tokens are short-lived (15 minutes)
+- Refresh tokens are long-lived (7 days) but can be revoked
+- JWT secrets are stored in environment variables, not in code
+- All tokens have proper expiration timestamps
+
+## API Security
+- Authentication endpoints follow RESTful practices
+- Sensitive operations require authentication via JWT
+- Validation is applied to all input data
+- CORS is enabled to restrict cross-origin requests
+
+## Refresh Token Security
+- Refresh tokens are stored hashed in the database
+- Each refresh token is unique and can only be used once
+- Refresh tokens are invalidated on logout
+- Expired tokens are automatically invalidated
+
+## Security Headers
+- Implement appropriate security headers in production:
+  - X-Content-Type-Options: nosniff
+  - X-Frame-Options: DENY
+  - Content-Security-Policy: appropriate policies
+  - Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+## Additional Security Measures
+- Implement rate limiting for authentication endpoints
+- Add brute force protection (e.g., temporary account lockout)
+- Implement IP-based or device-based suspicious activity detection
+- Set up audit logging for authentication events
+*/
