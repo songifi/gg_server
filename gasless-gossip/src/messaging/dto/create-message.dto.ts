@@ -1,53 +1,30 @@
-import {
-    IsString,
-    IsNotEmpty,
-    IsEnum,
-    IsOptional,
-    IsArray,
-    ValidateNested,
-    IsBoolean,
-    MaxLength,
-  } from "class-validator";
-  import { Type } from "class-transformer";
-  import { MessageType } from "../enums/message-type.enum";
-  import { CreateAttachmentDto } from "./create-attachment.dto";
-  import { CreateTokenTransferDto } from "./create-token-transfer.dto";
-  
-  export class CreateMessageDto {
-    @IsString()
-    @IsNotEmpty()
-    conversationId!: string;
-  
-    @IsString()
-    @IsNotEmpty()
-    @MaxLength(2000)
-    content!: string;
-  
-    @IsEnum(MessageType)
-    @IsNotEmpty()
-    type!: MessageType;
-  
-    @IsOptional()
-    @IsString()
-    replyTo?: string;
-  
-    @IsOptional()
-    @IsArray()
-    @IsString({ each: true })
-    mentions?: string[];
-  
-    @IsOptional()
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => CreateAttachmentDto)
-    attachments?: CreateAttachmentDto[];
-  
-    @IsOptional()
-    @ValidateNested()
-    @Type(() => CreateTokenTransferDto)
-    tokenTransfer?: CreateTokenTransferDto;
-  
-    @IsOptional()
-    @IsBoolean()
-    isEdited?: boolean;
-  }
+import { IsString, IsNotEmpty, IsMongoId, MaxLength } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+
+export class CreateMessageDto {
+  @ApiProperty({
+    description: 'The recipient user ID',
+    example: '60d21b4667d0d8992e610c85',
+  })
+  @IsMongoId()
+  @IsNotEmpty()
+  recipientId: string;
+
+  @ApiProperty({
+    description: 'The conversation ID (optional if starting a new conversation)',
+    example: '60d21b4667d0d8992e610c86',
+    required: false,
+  })
+  @IsMongoId()
+  conversationId?: string;
+
+  @ApiProperty({
+    description: 'Message content',
+    example: 'Hello, how are you?',
+    maxLength: 2000,
+  })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(2000)
+  content: string;
+}

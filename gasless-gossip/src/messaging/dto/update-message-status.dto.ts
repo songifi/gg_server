@@ -1,28 +1,13 @@
+import { IsEnum } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { MessageStatus } from '../schemas/message.schema';
 
-import {
-    IsString,
-    IsNotEmpty,
-    IsEnum,
-    IsOptional,
-    IsDateString,
-  } from "class-validator";
-  import { MessageStatus } from "../enums/message-status.enum";
-  
-  export class UpdateMessageStatusDto {
-    @IsString()
-    @IsNotEmpty()
-    messageId!: string;
-  
-    @IsEnum(MessageStatus)
-    @IsNotEmpty()
-    status!: MessageStatus;
-  
-    @IsOptional()
-    @IsDateString()
-    deliveredAt?: string;
-  
-    @IsOptional()
-    @IsDateString()
-    readAt?: string;
-  }
-  
+export class UpdateMessageStatusDto {
+  @ApiProperty({
+    enum: MessageStatus,
+    description: 'New status for the message',
+    example: MessageStatus.READ,
+  })
+  @IsEnum(MessageStatus)
+  status: MessageStatus;
+}
