@@ -1,172 +1,128 @@
+// File: src/modules/messaging/schemas/message.schema.ts
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
+import { ApiProperty } from '@nestjs/swagger';
 
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
-import { Schema as MongooseSchema } from 'mongoose';
-import { MessageStatus } from "../enums/message-status.enum";
-import { MessageType } from "../enums/message-type.enum";
-
-@Schema()
-class ReactionSchema {
-  @Prop({ required: true })
-  userId!: string;
-
-  @Prop({ required: true })
-  emoji!: string;
-
-  @Prop({ default: Date.now })
-  createdAt!: Date;
+export enum MessageType {
+  TEXT = 'text',
+  IMAGE = 'image',
+  FILE = 'file',
+  SYSTEM = 'system',
+  ANNOUNCEMENT = 'announcement',
+  POLL = 'poll'
 }
 
-@Schema()
-class DimensionsSchema {
-  @Prop()
-  width!: number;
-
-  @Prop()
-  height!: number;
+export enum MessageStatus {
+  SENT = 'sent',
+  DELIVERED = 'delivered',
+  READ = 'read'
 }
 
-@Schema()
-class AttachmentSchema {
-  @Prop({ required: true, enum: ["image", "video", "audio", "file"] })
-  type!: string;
+@Schema({ _id: false })
+export class ReadReceipt {
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
+  userId: MongooseSchema.Types.ObjectId;
 
-  @Prop({ required: true })
-  url!: string;
-
-  @Prop({ required: true })
-  filename!: string;
-
-  @Prop({ required: true })
-  mimeType!: string;
-
-  @Prop({ required: true })
-  size!: number;
-
-  @Prop()
-  dimensions?: DimensionsSchema;
-
-  @Prop()
-  duration?: number;
-
-  @Prop()
-  thumbnailUrl?: string;
+  @Prop({ type: Date, default: Date.now })
+  readAt: Date;
 }
 
-@Schema()
-class TokenTransferSchema {
-  @Prop({ required: true })
-  amount!: string;
-
-  @Prop({ required: true })
-  tokenAddress!: string;
-
-  @Prop({ required: true })
-  tokenSymbol!: string;
-
-  @Prop({ required: true })
-  tokenDecimals!: number;
-
-  @Prop()
-  transactionHash?: string;
-
-  @Prop({ required: true, enum: ["pending", "confirmed", "failed"] })
-  status!: string;
-}
+export const ReadReceiptSchema = SchemaFactory.createForClass(ReadReceipt);
 
 @Schema({ timestamps: true })
-export class MessageDocument extends Document {
-  @Prop({ required: true, index: true })
-  conversationId!: string;
+export class Message {
+  @ApiProperty({ description: 'Message sender ID' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
+  senderId: MongooseSchema.Types.ObjectId;
 
-  @Prop({ required: true, index: true })
-  sender!: string;
+  @ApiProperty({ description: 'Recipient ID (for direct messages)' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
+  recipientId?: MongooseSchema.Types.ObjectId;
 
+  @ApiProperty({ description: 'Group ID (for group messages)' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Conversation' })
+  groupId?: MongooseSchema.Types.ObjectId;
+
+  @ApiProperty({ description: 'Conversation this message belongs to' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Conversation', required: true })
+  conversationId: MongooseSchema.Types.ObjectId;
+
+  @ApiProperty({ description: 'Message content' })
   @Prop({ required: true })
-  content!: string;
+  content: string;
 
-  @Prop({ required: true, enum: MessageType, default: MessageType.TEXT })
-  type!: MessageType;
+  @ApiProperty({ enum: MessageType, description: 'Type of message' })
+  @Prop({ type: String, enum: MessageType, default: MessageType.TEXT })
+  type: MessageType;
 
-  @Prop({ required: true, enum: MessageStatus, default: MessageStatus.SENT })
-  status!: MessageStatus;
+  @ApiProperty({ description: 'Whether this message is pinned' })
+  @Prop({ type: Boolean, default: false })
+  isPinned: boolean;
 
-  @Prop({ type: [String], default: [] })
-  readBy!: string[];
+  @ApiProperty({ description: 'Who pinned this message' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
+  pinnedBy?: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: [ReactionSchema], default: [] })
-  reactions!: ReactionSchema[];
+  @ApiProperty({ description: 'When this message was pinned' })
+  @Prop({ type: Date })
+  pinnedAt?: Date;
 
-  @Prop()
-  replyTo?: string;
+  @ApiProperty({ description: 'Array of read receipts' })
+  @Prop({ type: [ReadReceiptSchema], default: [] })
+  readReceipts: ReadReceipt[];
 
-  @Prop({ type: [String], default: [] })
-  mentions?: string[];
+  @ApiProperty({ description: 'Array of user IDs who have been mentioned' })
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }], default: [] })
+  mentions: MongooseSchema.Types.ObjectId[];
 
-  @Prop({ type: [AttachmentSchema], default: [] })
-  attachments?: AttachmentSchema[];
+  @ApiProperty({ description: 'Optional reply to another message' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Message' })
+  replyToId?: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: TokenTransferSchema })
-  tokenTransfer?: TokenTransferSchema;
+  @ApiProperty({ description: 'Message delivery status' })
+  @Prop({ type: String, enum: MessageStatus, default: MessageStatus.SENT })
+  status: MessageStatus;
 
-  @Prop({ type: Object, default: {} })
+  @ApiProperty({ description: 'Additional metadata for specific message types' })
+  @Prop({ type: Object })
   metadata?: Record<string, any>;
 
-  @Prop({ default: false })
-  isEdited!: boolean;
+  @ApiProperty({ description: 'ID of transaction attached to this message (if any)' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Transaction' })
+  transactionId?: MongooseSchema.Types.ObjectId;
 
-  @Prop({ default: false })
-  isDeleted!: boolean;
- 
-  @Prop()
-  deliveredAt?: Date;
+  @ApiProperty({ description: 'Whether this message is edited' })
+  @Prop({ type: Boolean, default: false })
+  isEdited: boolean;
 
-  @Prop()
-  readAt?: Date;
+  @ApiProperty({ description: 'When this message was edited' })
+  @Prop({ type: Date })
+  editedAt?: Date;
+
+  @ApiProperty({ description: 'Whether this message is deleted' })
+  @Prop({ type: Boolean, default: false })
+  isDeleted: boolean;
+
+  @ApiProperty({ description: 'When this message was deleted' })
+  @Prop({ type: Date })
+  deletedAt?: Date;
+
+  @ApiProperty({ description: 'Creation timestamp' })
+  createdAt: Date;
+
+  @ApiProperty({ description: 'Last update timestamp' })
+  updatedAt: Date;
 }
 
-export const MessageSchema = SchemaFactory.createForClass(MessageDocument);
+export type MessageDocument = Message & Document;
+export const MessageSchema = SchemaFactory.createForClass(Message);
 
-// Create indexes for efficient queries
+// Create indexes for efficient querying
 MessageSchema.index({ conversationId: 1, createdAt: -1 });
-MessageSchema.index({ sender: 1, createdAt: -1 });
-MessageSchema.index({ "tokenTransfer.transactionHash": 1 }, { sparse: true });
-MessageSchema.index({ mentions: 1 }, { sparse: true });
-
-/**
- * Message Relationships Documentation
- *
- * The Message resource has the following relationships:
- *
- * 1. Message to User (Sender):
- *    - Each message has a sender field containing the user ID of the sender
- *    - This is a many-to-one relationship (many messages can be sent by one user)
- *    - The sender field is indexed for efficient querying
- *
- * 2. Message to Conversation:
- *    - Each message belongs to a conversation identified by conversationId
- *    - This is a many-to-one relationship (many messages in one conversation)
- *    - The conversationId field is indexed for efficient querying
- *    - Conversations can be either direct (between two users) or group (multiple users)
- *
- * 3. Message to Message (Reply):
- *    - Messages can reference other messages through the replyTo field
- *    - This creates a self-referential relationship for threaded conversations
- *
- * 4. Message to User (Mentions):
- *    - Messages can mention multiple users through the mentions array
- *    - This is a many-to-many relationship (messages can mention multiple users)
- *    - The mentions field is indexed for efficient notification queries
- *
- * 5. Message to User (Read Status):
- *    - The readBy array tracks which users have read the message
- *    - This is a many-to-many relationship (messages can be read by multiple users)
- *
- * 6. Message to Reaction:
- *    - Messages can have multiple reactions from different users
- *    - Reactions are embedded documents containing userId, emoji, and timestamp
- *
- * 7. Message to Token Transfer:
- *    - Messages can include token transfer details for StarkNet transactions
- *    - This embeds transaction data directly in the message for integrated display
- */
+MessageSchema.index({ senderId: 1 });
+MessageSchema.index({ recipientId: 1 });
+MessageSchema.index({ groupId: 1 });
+MessageSchema.index({ isPinned: 1, conversationId: 1 });
+MessageSchema.index({ 'mentions': 1 });
+MessageSchema.index({ type: 1, conversationId: 1 });
+MessageSchema.index({ replyToId: 1 });
