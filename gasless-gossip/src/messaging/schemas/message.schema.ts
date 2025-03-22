@@ -46,6 +46,25 @@ export class Message {
   @ApiProperty({ description: 'Conversation this message belongs to' })
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Conversation', required: true })
   conversationId: MongooseSchema.Types.ObjectId;
+export enum MessageStatus {
+  SENT = 'sent',
+  DELIVERED = 'delivered',
+  READ = 'read',
+}
+
+@Schema({ timestamps: true })
+export class Message {
+  @ApiProperty({ description: 'The sender user ID' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
+  sender: MongooseSchema.Types.ObjectId;
+
+  @ApiProperty({ description: 'The recipient user ID' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
+  recipient: MongooseSchema.Types.ObjectId;
+
+  @ApiProperty({ description: 'The conversation this message belongs to' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Conversation', required: true })
+  conversation: MongooseSchema.Types.ObjectId;
 
   @ApiProperty({ description: 'Message content' })
   @Prop({ required: true })
@@ -106,6 +125,17 @@ export class Message {
   @ApiProperty({ description: 'When this message was deleted' })
   @Prop({ type: Date })
   deletedAt?: Date;
+  @ApiProperty({ enum: MessageStatus, description: 'Current status of the message' })
+  @Prop({ type: String, enum: MessageStatus, default: MessageStatus.SENT })
+  status: MessageStatus;
+
+  @ApiProperty({ description: 'When the message was delivered' })
+  @Prop()
+  deliveredAt?: Date;
+
+  @ApiProperty({ description: 'When the message was read' })
+  @Prop()
+  readAt?: Date;
 
   @ApiProperty({ description: 'Creation timestamp' })
   createdAt: Date;

@@ -14,6 +14,12 @@ export class CreateMessageDto {
 
   @ApiProperty({
     description: 'Conversation ID',
+import { IsString, IsNotEmpty, IsMongoId, MaxLength } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+
+export class CreateMessageDto {
+  @ApiProperty({
+    description: 'The recipient user ID',
     example: '60d21b4667d0d8992e610c85',
   })
   @IsMongoId()
@@ -22,6 +28,10 @@ export class CreateMessageDto {
 
   @ApiProperty({
     description: 'Recipient ID (for direct messages)',
+  recipientId: string;
+
+  @ApiProperty({
+    description: 'The conversation ID (optional if starting a new conversation)',
     example: '60d21b4667d0d8992e610c86',
     required: false,
   })
@@ -82,4 +92,15 @@ export class CreateMessageDto {
   @IsMongoId({ each: true })
   @IsOptional()
   mentionIds?: string[];
+  conversationId?: string;
+
+  @ApiProperty({
+    description: 'Message content',
+    example: 'Hello, how are you?',
+    maxLength: 2000,
+  })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(2000)
+  content: string;
 }

@@ -1,4 +1,3 @@
-// File: src/modules/conversation/schemas/conversation.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
@@ -50,73 +49,61 @@ export const ConversationMemberSchema = SchemaFactory.createForClass(Conversatio
 
 @Schema({ timestamps: true })
 export class Conversation {
-  @ApiProperty({ description: 'Conversation title (required for group conversations)' })
-  @Prop({ type: String, trim: true })
+  @Prop({
+    type: String,
+    enum: Object.values(ConversationType),
+    required: true,
+  })
+  type!: ConversationType;
+
+  @Prop({
+    type: String,
+    required: function (this: ConversationDocument) {
+      return this.type === ConversationType.GROUP;
+    },
+    trim: true,
+    maxlength: 100,
+  })
   title?: string;
 
-  @ApiProperty({ description: 'Conversation type' })
-  @Prop({ type: String, enum: ConversationType, required: true })
-  type: ConversationType;
+  @Prop({
+    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }],
+    validate: [
+      {
+        validator: function (this: ConversationDocument, participants: string[]) {
+          if (this.type === ConversationType.DIRECT) {
+            return participants.length === 2;
+          }
+          return participants.length >= 2;
+        },
+        message:
+          'Direct conversations must have exactly 2 participants, group conversations must have at least 2',
+      },
+    ],
+    required: true,
+  })
+  participants!: User[];
 
-  @ApiProperty({ description: 'Whether this is an encrypted conversation' })
-  @Prop({ type: Boolean, default: false })
-  isEncrypted: boolean;
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'User',
+    required: function (this: ConversationDocument) {
+      return this.type === ConversationType.GROUP;
+    },
+  })
+  admin?: User;
 
-  @ApiProperty({ description: 'Conversation description (for groups)' })
-  @Prop({ type: String })
-  description?: string;
-
-  @ApiProperty({ description: 'Group avatar URL (for groups)' })
-  @Prop({ type: String })
-  avatarUrl?: string;
-
-  @ApiProperty({ description: 'Conversation participants with their status' })
-  @Prop({ type: [ConversationMemberSchema], required: true })
-  members: ConversationMember[];
-
-  @ApiProperty({ description: 'Creator of the conversation' })
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
-  createdBy: MongooseSchema.Types.ObjectId;
-
-  @ApiProperty({ description: 'Last message in the conversation' })
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Message' })
-  lastMessageId?: MongooseSchema.Types.ObjectId;
-
-  @ApiProperty({ description: 'Last message timestamp' })
-  @Prop({ type: Date })
-  lastMessageAt?: Date;
-
-  @ApiProperty({ description: 'Pinned messages in the conversation' })
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Message' }], default: [] })
-  pinnedMessages: MongooseSchema.Types.ObjectId[];
-
-  @ApiProperty({ description: 'Whether members can add others (for groups)' })
   @Prop({ type: Boolean, default: true })
-  canMembersAddMembers: boolean;
+  isActive!: boolean;
 
-  @ApiProperty({ description: 'Whether members can send messages (for groups)' })
-  @Prop({ type: Boolean, default: true })
-  canMembersSendMessages: boolean;
-
-  @ApiProperty({ description: 'Whether only admins can send messages (for announcements)' })
-  @Prop({ type: Boolean, default: false })
-  isAnnouncementGroup: boolean;
-
-  @ApiProperty({ description: 'Creation timestamp' })
-  createdAt: Date;
-
-  @ApiProperty({ description: 'Last update timestamp' })
-  updatedAt: Date;
+  @Prop({ type: Date, default: Date.now })
+  lastMessageAt!: Date;
 }
 
 export type ConversationDocument = Conversation & Document;
 export const ConversationSchema = SchemaFactory.createForClass(Conversation);
 
-// Create indexes for efficient querying
-ConversationSchema.index({ 'members.userId': 1 });
-ConversationSchema.index({ createdBy: 1 });
+// Add indexes
+ConversationSchema.index({ participants: 1 });
+ConversationSchema.index({ admin: 1 });
 ConversationSchema.index({ lastMessageAt: -1 });
-ConversationSchema.index({ 'members.userId': 1, lastMessageAt: -1 });
-ConversationSchema.index({ 'members.userId': 1, 'members.hasLeft': 1 });
-ConversationSchema.index({ type: 1 });
-ConversationSchema.index({ isAnnouncementGroup: 1 });
