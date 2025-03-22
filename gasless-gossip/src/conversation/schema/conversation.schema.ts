@@ -2,79 +2,108 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 
-// Subdocument schema for participant information
+export enum ConversationType {
+  DIRECT = 'direct',
+  GROUP = 'group'
+}
+
+export enum MemberRole {
+  OWNER = 'owner',
+  ADMIN = 'admin',
+  MODERATOR = 'moderator',
+  MEMBER = 'member'
+}
+
 @Schema({ _id: false })
-export class Participant {
+export class ConversationMember {
   @ApiProperty({ description: 'User ID of the participant' })
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   userId: MongooseSchema.Types.ObjectId;
+
+  @ApiProperty({ description: 'Member role in the group' })
+  @Prop({ type: String, enum: MemberRole, default: MemberRole.MEMBER })
+  role: MemberRole;
 
   @ApiProperty({ description: 'Number of unread messages for this participant' })
   @Prop({ type: Number, default: 0 })
   unreadCount: number;
 
-  @ApiProperty({ description: 'Timestamp when the participant last read the conversation' })
+  @ApiProperty({ description: 'Timestamp of last read message' })
   @Prop({ type: Date })
   lastReadAt?: Date;
 
-  @ApiProperty({ description: 'Whether the participant has left the conversation' })
+  @ApiProperty({ description: 'Whether the member has left the conversation' })
   @Prop({ type: Boolean, default: false })
   hasLeft: boolean;
 
-  @ApiProperty({ description: 'When the participant was added to the conversation' })
+  @ApiProperty({ description: 'When the member joined the conversation' })
   @Prop({ type: Date, default: Date.now })
   joinedAt: Date;
+
+  @ApiProperty({ description: 'When the member left the conversation' })
+  @Prop({ type: Date })
+  leftAt?: Date;
 }
 
-export const ParticipantSchema = SchemaFactory.createForClass(Participant);
+export const ConversationMemberSchema = SchemaFactory.createForClass(ConversationMember);
 
 @Schema({ timestamps: true })
 export class Conversation {
-  @ApiProperty({ description: 'Conversation title (optional for direct messages)' })
-  @Prop({ type: String, trim: true })
+  @Prop({
+    type: String,
+    enum: Object.values(ConversationType),
+    required: true,
+  })
+  type!: ConversationType;
+
+  @Prop({
+    type: String,
+    required: function (this: ConversationDocument) {
+      return this.type === ConversationType.GROUP;
+    },
+    trim: true,
+    maxlength: 100,
+  })
   title?: string;
 
-  @ApiProperty({ description: 'Whether this is a group conversation' })
-  @Prop({ type: Boolean, default: false, required: true })
-  isGroup: boolean;
+  @Prop({
+    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }],
+    validate: [
+      {
+        validator: function (this: ConversationDocument, participants: string[]) {
+          if (this.type === ConversationType.DIRECT) {
+            return participants.length === 2;
+          }
+          return participants.length >= 2;
+        },
+        message:
+          'Direct conversations must have exactly 2 participants, group conversations must have at least 2',
+      },
+    ],
+    required: true,
+  })
+  participants!: User[];
 
-  @ApiProperty({ description: 'Conversation participants with their read status' })
-  @Prop({ type: [ParticipantSchema], required: true })
-  participants: Participant[];
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'User',
+    required: function (this: ConversationDocument) {
+      return this.type === ConversationType.GROUP;
+    },
+  })
+  admin?: User;
 
-  @ApiProperty({ description: 'Creator of the conversation' })
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
-  createdBy: MongooseSchema.Types.ObjectId;
+  @Prop({ type: Boolean, default: true })
+  isActive!: boolean;
 
-  @ApiProperty({ description: 'Last message in the conversation' })
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Message' })
-  lastMessage?: MongooseSchema.Types.ObjectId;
-
-  @ApiProperty({ description: 'Last message text preview' })
-  @Prop({ type: String })
-  lastMessageText?: string;
-
-  @ApiProperty({ description: 'Sender of the last message' })
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
-  lastMessageSender?: MongooseSchema.Types.ObjectId;
-
-  @ApiProperty({ description: 'When the last message was sent' })
-  @Prop({ type: Date })
-  lastMessageAt?: Date;
-
-  @ApiProperty({ description: 'Creation timestamp' })
-  createdAt: Date;
-
-  @ApiProperty({ description: 'Last update timestamp' })
-  updatedAt: Date;
+  @Prop({ type: Date, default: Date.now })
+  lastMessageAt!: Date;
 }
 
 export type ConversationDocument = Conversation & Document;
 export const ConversationSchema = SchemaFactory.createForClass(Conversation);
 
-// Create indexes for efficient querying
-ConversationSchema.index({ 'participants.userId': 1 });
+// Add indexes
+ConversationSchema.index({ participants: 1 });
+ConversationSchema.index({ admin: 1 });
 ConversationSchema.index({ lastMessageAt: -1 });
-ConversationSchema.index({ createdAt: -1 });
-ConversationSchema.index({ 'participants.userId': 1, lastMessageAt: -1 });
-ConversationSchema.index({ 'participants.userId': 1, 'participants.hasLeft': 1 });
