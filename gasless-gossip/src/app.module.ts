@@ -20,6 +20,7 @@ import { MessageModule } from './messaging/message.module';
 import { GroupModule } from './group/group.module';
 // import { ConversationModule } from './conversation/conversation.module';
 import { RoomModule } from './room/room.module';
+import { TokenModule } from './token/token.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { RoomModule } from './room/room.module';
     MessageModule,
     GroupModule,
     RoomModule,
+    TokenModule,
     // ConversationModule
   ],
   controllers: [AppController],
